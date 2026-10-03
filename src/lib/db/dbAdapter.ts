@@ -16,6 +16,9 @@ import {
   defaultPackages,
   defaultTemplates,
   defaultDemoInvitation,
+  defaultRoseRomanceDemoInvitation,
+  defaultChampagneDemoInvitation,
+  defaultEngagementDemoInvitation,
   defaultKhitananDemoInvitation,
   defaultSampleGuests,
   defaultSampleWishes,
@@ -51,8 +54,11 @@ class LocalDataStore {
     // Seed default templates
     defaultTemplates.forEach((t) => this.templates.set(t.id, t));
 
-    // Seed demo invitation
+    // Seed demo invitations
     this.invitations.set(defaultDemoInvitation.id, { ...defaultDemoInvitation });
+    this.invitations.set(defaultRoseRomanceDemoInvitation.id, { ...defaultRoseRomanceDemoInvitation });
+    this.invitations.set(defaultChampagneDemoInvitation.id, { ...defaultChampagneDemoInvitation });
+    this.invitations.set(defaultEngagementDemoInvitation.id, { ...defaultEngagementDemoInvitation });
     this.invitations.set(defaultKhitananDemoInvitation.id, { ...defaultKhitananDemoInvitation });
 
     // Seed sample guests & wishes
@@ -124,6 +130,18 @@ class LocalDataStore {
     const cleanSlug = slug.toLowerCase().trim();
     if (['demo-khitanan', 'afnan-atma-purnama', 'khitanan', 'aqiqah'].includes(cleanSlug)) {
       return this.invitations.get(defaultKhitananDemoInvitation.id);
+    }
+    if (['kevin-dan-amanda', 'demo-wedding-rose', 'rose-romance'].includes(cleanSlug)) {
+      return this.invitations.get(defaultRoseRomanceDemoInvitation.id);
+    }
+    if (['rama-dan-shinta', 'demo-wedding-champagne', 'champagne-editorial'].includes(cleanSlug)) {
+      return this.invitations.get(defaultChampagneDemoInvitation.id);
+    }
+    if (['arya-dan-nabila', 'demo-engagement', 'pastel-garden-engagement'].includes(cleanSlug)) {
+      return this.invitations.get(defaultEngagementDemoInvitation.id);
+    }
+    if (['alyadanbudi', 'alya-dan-budi', 'dimas-dan-kirana', 'the-royal-sage', 'demo-wedding-sage'].includes(cleanSlug)) {
+      return this.invitations.get(defaultDemoInvitation.id);
     }
     return Array.from(this.invitations.values()).find(
       (inv) => inv.slug.toLowerCase() === cleanSlug && inv.status !== 'deleted'

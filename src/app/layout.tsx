@@ -17,7 +17,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Invitatum — Platform Undangan Digital Pernikahan & Pertunangan Elegan',
+  title: 'Invitatum : Platform Undangan Digital Pernikahan & Pertunangan Elegan',
   description:
     'Buat dan bagikan undangan digital pernikahan dan pertunangan yang romantis, modern, dan berkelas. Dilengkapi buku tamu, RSVP real-time, amplop digital, dan QR check-in.',
   keywords: [
