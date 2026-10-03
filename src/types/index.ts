@@ -10,7 +10,15 @@ export interface UserProfile {
   updatedAt: string;
 }
 
-export type EventCategory = 'wedding' | 'engagement';
+export type EventCategory =
+  | 'wedding'
+  | 'engagement'
+  | 'khitanan'
+  | 'aqiqah'
+  | 'ulang-tahun'
+  | 'wisuda'
+  | 'custom'
+  | string;
 
 export type PackageTier = 'basic' | 'premium' | 'exclusive';
 
@@ -173,8 +181,8 @@ export interface InvitationData {
     secondaryColor: string;
     fontSerif: string;
     fontSans: string;
-    animationType: 'fade' | 'envelope' | 'floral' | 'slide';
-    openingCoverType: 'wax_seal' | 'curtain' | 'card' | 'floral_arch';
+    animationType: 'fade' | 'envelope' | 'floral' | 'slide' | string;
+    openingCoverType: 'wax_seal' | 'curtain' | 'card' | 'floral_arch' | 'indoinvite_gate' | string;
     backgroundMusicUrl?: string;
   };
 
@@ -263,7 +271,19 @@ export type TemplateStyleTag =
   | 'traditional'
   | 'botanical'
   | 'romantic'
-  | 'contemporary';
+  | 'contemporary'
+  | 'islamic'
+  | 'arabic'
+  | 'khitanan'
+  | 'aqiqah'
+  | 'blue'
+  | 'white'
+  | 'navy'
+  | 'grey'
+  | 'black'
+  | 'gold'
+  | 'java'
+  | string;
 
 export interface InvitationTemplate {
   id: string;

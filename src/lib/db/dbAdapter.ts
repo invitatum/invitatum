@@ -16,6 +16,7 @@ import {
   defaultPackages,
   defaultTemplates,
   defaultDemoInvitation,
+  defaultKhitananDemoInvitation,
   defaultSampleGuests,
   defaultSampleWishes,
   defaultFaqs,
@@ -52,6 +53,7 @@ class LocalDataStore {
 
     // Seed demo invitation
     this.invitations.set(defaultDemoInvitation.id, { ...defaultDemoInvitation });
+    this.invitations.set(defaultKhitananDemoInvitation.id, { ...defaultKhitananDemoInvitation });
 
     // Seed sample guests & wishes
     defaultSampleGuests.forEach((g) => this.guests.set(g.id, g));
@@ -120,6 +122,9 @@ class LocalDataStore {
 
   getInvitationBySlug(slug: string): InvitationData | undefined {
     const cleanSlug = slug.toLowerCase().trim();
+    if (['demo-khitanan', 'afnan-atma-purnama', 'khitanan', 'aqiqah'].includes(cleanSlug)) {
+      return this.invitations.get(defaultKhitananDemoInvitation.id);
+    }
     return Array.from(this.invitations.values()).find(
       (inv) => inv.slug.toLowerCase() === cleanSlug && inv.status !== 'deleted'
     );
