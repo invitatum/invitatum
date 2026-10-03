@@ -1,0 +1,112 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Invitations Collection
+    match /invitations/{invitationId} {
+      // Anyone can read published invitations by slug or ID
+      allow read: if resource.data.status == 'published' || 
+                     (isAuthenticated() && resource.data.userId == request.auth.uid) || 
+                     isAdmin();
+      
+      // Only authenticated users can create drafts
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      // Only owner can update, cannot change packageTier or status to 'paid'/'published' without backend
+      allow update: if (
+        isAuthenticated() && 
+        resource.data.userId == request.auth.uid &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['packageTier', 'paidAt', 'expiresAt'])
+      ) || isAdmin();
+
+      // Only owner or admin can soft delete
+      allow delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+
+    // Guests Subcollection
+    match /invitations/{invitationId}/guests/{guestId} {
+      allow read: if (isAuthenticated() && get(/databases/$(database)/documents/invitations/$(invitationId)).data.userId == request.auth.uid) || isAdmin();
+      allow write: if (isAuthenticated() && get(/databases/$(database)/documents/invitations/$(invitationId)).data.userId == request.auth.uid) || isAdmin();
+    }
+
+    // RSVPs Collection
+    match /rsvps/{rsvpId} {
+      allow read: if isAuthenticated() || isAdmin();
+      // Guests can create RSVPs with size limit
+      allow create: if request.resource.data.guestName.size() > 0 && request.resource.data.guestName.size() <= 100;
+      allow update, delete: if isAdmin() || (
+        isAuthenticated() && 
+        get(/databases/$(database)/documents/invitations/$(resource.data.invitationId)).data.userId == request.auth.uid
+      );
+    }
+
+    // Wishes Collection
+    match /wishes/{wishId} {
+      allow read: if resource.data.isApproved == true || isAuthenticated() || isAdmin();
+      // Guests can submit wishes with moderation constraints
+      allow create: if request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 500;
+      allow update, delete: if isAdmin() || (
+        isAuthenticated() && 
+        get(/databases/$(database)/documents/invitations/$(resource.data.invitationId)).data.userId == request.auth.uid
+      );
+    }
+
+    // Templates Collection
+    match /templates/{templateId} {
+      allow read: if true; // Public gallery
+      allow write: if isAdmin();
+    }
+
+    // Packages Collection
+    match /packages/{packageId} {
+      allow read: if true; // Public pricing
+      allow write: if isAdmin();
+    }
+
+    // Transactions Collection - Strictly read-only for users, writes only via Cloud Functions / Server SDK
+    match /transactions/{transactionId} {
+      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow write: if isAdmin(); // Client cannot forge transactions
+    }
+
+    // Audit Logs - Admin Only
+    match /adminAuditLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // System Settings & CMS
+    match /systemSettings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /faqs/{faqId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

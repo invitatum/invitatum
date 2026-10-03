@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --color-ivory: #FAF7F2;
+  --color-ivory-light: #FFFFFF;
+  --color-dusty-pink: #D99B9B;
+  --color-dusty-pink-dark: #8C3B4A;
+  --color-sage: #607755;
+  --color-sage-dark: #384732;
+  --color-champagne: #C5A059;
+  --color-champagne-dark: #8C6E2D;
+  --color-charcoal: #242625;
+  --color-muted: #5A605B;
+  --color-border: #E8E2D8;
+
+  --background: #FAF7F2;
+  --foreground: #242625;
+}
+
+@theme {
+  --color-ivory: #FAF7F2;
+  --color-ivory-light: #FFFFFF;
+  --color-dusty-pink: #D99B9B;
+  --color-dusty-pink-dark: #8C3B4A;
+  --color-sage: #607755;
+  --color-sage-dark: #384732;
+  --color-champagne: #C5A059;
+  --color-champagne-dark: #8C6E2D;
+  --color-charcoal: #242625;
+  --color-muted: #5A605B;
+  --color-border: #E8E2D8;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Elegant Romantic Typography Classes */
+.font-serif-elegant {
+  font-family: var(--font-serif), Georgia, serif;
+}
+
+/* Wax Seal Button Pulse */
+@keyframes seal-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 14px rgba(197, 160, 89, 0.35);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 6px 20px rgba(197, 160, 89, 0.55);
+  }
+}
+
+.animate-seal-pulse {
+  animation: seal-pulse 3s infinite ease-in-out;
+}
+
+/* Respect user's reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Minimum accessible tap target */
+.tap-target-44 {
+  min-width: 44px;
+  min-height: 44px;
+}

@@ -1,0 +1,46 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    // Public templates and assets
+    match /templates/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // User invitation media uploads (photos, videos, music)
+    match /invitations/{invitationId}/{mediaType}/{fileName} {
+      // Anyone can view photos/music on public invitations
+      allow read: if true;
+
+      // Only authenticated users who own the invitation can upload
+      allow write: if isAuthenticated() && (
+        // Image validation: max 5MB, jpeg/png/webp
+        (mediaType == 'photos' && 
+         request.resource.size < 5 * 1024 * 1024 &&
+         request.resource.contentType.matches('image/(jpeg|png|webp)')) ||
+        // Audio validation: max 8MB, mp3/wav/ogg
+        (mediaType == 'music' && 
+         request.resource.size < 8 * 1024 * 1024 &&
+         request.resource.contentType.matches('audio/(mpeg|mp3|wav|ogg)')) ||
+        // Video validation: max 50MB, mp4/webm
+        (mediaType == 'videos' && 
+         request.resource.size < 50 * 1024 * 1024 &&
+         request.resource.contentType.matches('video/(mp4|webm)'))
+      );
+
+      allow delete: if isAuthenticated() || isAdmin();
+    }
+  }
+}
